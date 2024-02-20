@@ -1,21 +1,21 @@
 using Unity.Entities;
 using UnityEngine;
 
-public struct CubeSpawner : IComponentData
+public struct PlayerSpawner : IComponentData
 {
     public Entity Cube;
 }
 
 [DisallowMultipleComponent]
-public class CubeSpawnerAuthoring : MonoBehaviour
+public class PlayerSpawnerAuthoring : MonoBehaviour
 {
     public GameObject Cube;
 
-    class Baker : Baker<CubeSpawnerAuthoring>
+    class Baker : Baker<PlayerSpawnerAuthoring>
     {
-        public override void Bake(CubeSpawnerAuthoring authoring)
+        public override void Bake(PlayerSpawnerAuthoring authoring)
         {
-            CubeSpawner component = default(CubeSpawner);
+            PlayerSpawner component = default(PlayerSpawner);
             component.Cube = GetEntity(authoring.Cube, TransformUsageFlags.Dynamic);
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, component);

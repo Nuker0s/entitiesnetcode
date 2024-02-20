@@ -2,12 +2,15 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public struct CubeInput : IInputComponentData
+public struct PlayerInput : IInputComponentData
 {
+    //declare variables
     public int Horizontal;
     public int Vertical;
+    public bool jump;
 }
 
+//authoriting baker
 [DisallowMultipleComponent]
 public class PlayerInputAuthoring : MonoBehaviour
 {
@@ -16,7 +19,7 @@ public class PlayerInputAuthoring : MonoBehaviour
         public override void Bake(PlayerInputAuthoring authoring)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent<CubeInput>(entity);
+            AddComponent<PlayerInput>(entity);
         }
     }
 }
@@ -27,14 +30,19 @@ public partial struct SampleCubeInput : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        //get inputs
         bool left = UnityEngine.Input.GetKey("left");
         bool right = UnityEngine.Input.GetKey("right");
         bool down = UnityEngine.Input.GetKey("down");
         bool up = UnityEngine.Input.GetKey("up");
+        bool jump = UnityEngine.Input.GetKeyDown(KeyCode.Space);
 
-        foreach (var playerInput in SystemAPI.Query<RefRW<CubeInput>>().WithAll<GhostOwnerIsLocal>())
+        foreach (var playerInput in SystemAPI.Query<RefRW<PlayerInput>>().WithAll<GhostOwnerIsLocal>())
         {
+            
             playerInput.ValueRW = default;
+            
+            //set inputs
             if (left)
                 playerInput.ValueRW.Horizontal -= 1;
             if (right)
@@ -43,6 +51,11 @@ public partial struct SampleCubeInput : ISystem
                 playerInput.ValueRW.Vertical -= 1;
             if (up)
                 playerInput.ValueRW.Vertical += 1;
+            if (jump)
+            {
+                playerInput.ValueRW.jump = true;
+            }
+
         }
     }
 }
